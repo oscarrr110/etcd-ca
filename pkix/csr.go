@@ -61,7 +61,7 @@ func ParseAndValidateIPs(ip_list string) (res []net.IP, e error) {
 	return
 }
 
-func CreateCertificateSigningRequest(key *Key, name string, ip_list string, domain_list string, organization string, country string) (*CertificateSigningRequest, error) {
+func CreateCertificateSigningRequest(key *Key, name string, ip_list string, domain_list string, common_name string, organization_unit string, organization string, country string) (*CertificateSigningRequest, error) {
 	// Sanity check on the ip values
 	ips, err := ParseAndValidateIPs(ip_list)
 	if err != nil {
@@ -73,14 +73,25 @@ func CreateCertificateSigningRequest(key *Key, name string, ip_list string, doma
 		domains = nil
 	}
 
-	csrPkixName.OrganizationalUnit = []string{name}
-	if len(domains) != 0 {
-		csrPkixName.CommonName = domains[0]
-	} else if len(ips) != 0 {
-		csrPkixName.CommonName = ips[0].String()
+	if(organization_unit == "") {
+		csrPkixName.OrganizationalUnit = []string{name}
 	} else {
-		return nil, errors.New("no valided domain nor ip provided")
+		csrPkixName.OrganizationalUnit = []string{organization_unit}
 	}
+
+	if(common_name == "") {
+
+		if len(domains) != 0 {
+			csrPkixName.CommonName = domains[0]
+		} else if len(ips) != 0 {
+			csrPkixName.CommonName = ips[0].String()
+		} else {
+			return nil, errors.New("no valided domain nor ip provided")
+		}
+	} else {
+		csrPkixName.CommonName = common_name
+	}
+
 	csrPkixName.Organization = []string{organization}
 	csrPkixName.Country = []string{country}
 	csrTemplate := &x509.CertificateRequest{

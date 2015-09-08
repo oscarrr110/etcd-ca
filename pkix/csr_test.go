@@ -64,7 +64,7 @@ func TestCreateCertificateSigningRequest(t *testing.T) {
 		t.Fatal("Failed creating rsa key:", err)
 	}
 
-	csr, err := CreateCertificateSigningRequest(key, csrHostname, csrIP, "127.0.0.1", "example", "US")
+	csr, err := CreateCertificateSigningRequest(key, csrHostname, csrIP, "127.0.0.1", "","", "example", "US")
 	if err != nil {
 		t.Fatal("Failed creating certificate request:", err)
 	}

@@ -34,6 +34,8 @@ func NewNewCertCommand() cli.Command {
 			cli.IntFlag{"key-bits", 4096, "Bit size of RSA keypair to generate", ""},
 			cli.StringFlag{"domain", "", "Use domain instead of IP address for SAN", ""},
 			cli.StringFlag{"organization", "etcd-ca", "Certificate organization", ""},
+			cli.StringFlag{"organization-unit", "", "Certificate organization unit", ""},
+			cli.StringFlag{"common-name", "", "Certificate common name", ""},
 			cli.StringFlag{"country", "USA", "Certificate country", ""},
 		},
 		Action: newCertAction,
@@ -72,7 +74,7 @@ func newCertAction(c *cli.Context) {
 		fmt.Printf("Created %s/key\n", name)
 	}
 
-	csr, err := pkix.CreateCertificateSigningRequest(key, name, c.String("ip"), c.String("domain"), c.String("organization"), c.String("country"))
+	csr, err := pkix.CreateCertificateSigningRequest(key, name, c.String("ip"), c.String("domain"), c.String("common-name"),c.String("organization-unit"),c.String("organization"), c.String("country"))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Create certificate request error:", err)
 		os.Exit(1)
